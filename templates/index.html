@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vegan/Vegetarian Menu Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2e7d32;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        textarea {
+            height: 200px;
+            resize: vertical;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+        .radio-option input {
+            margin-right: 8px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .menu-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        .menu-item-text {
+            font-weight: bold;
+            color: #333;
+        }
+        .reason {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ffcdd2;
+        }
+        .input-toggle {
+            margin-bottom: 20px;
+        }
+        .input-toggle button {
+            background: #e0e0e0;
+            color: #333;
+            width: auto;
+            margin-right: 10px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-toggle button.active {
+            background: #4CAF50;
+            color: white;
+        }
+        #url-input, #text-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌱 Vegan/Vegetarian Menu Filter</h1>
+
+        <form method="post">
+            <div class="input-toggle">
+                <button type="button" id="url-btn" class="active">Enter Restaurant URL</button>
+                <button type="button" id="text-btn">Paste Menu Text</button>
+            </div>
+
+            <div id="url-input" class="form-group">
+                <label for="menu_url">Restaurant Menu URL:</label>
+                <input type="text" id="menu_url" name="menu_url"
+                       placeholder="https://example.com/menu" value="{{ menu_url }}">
+            </div>
+
+            <div id="text-input" class="form-group" style="display: none;">
+                <label for="menu_text">Menu Text:</label>
+                <textarea id="menu_text" name="menu_text"
+                         placeholder="Paste menu items here, one per line...&#10;Grilled Chicken $15.99&#10;Caesar Salad $12.99&#10;Vegan Burger $14.99">{{ menu_text }}</textarea>
+            </div>
+
+            <!-- Hidden input for input type - updated by JavaScript -->
+            <input type="hidden" id="input_type_field" name="input_type" value="url">
+
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="filter_type" value="all" {% if filter_type == 'all' %}checked{% endif %}>
+                    Show All Items
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="filter_type" value="vegetarian" {% if filter_type == 'vegetarian' %}checked{% endif %}>
+                    Vegetarian Only
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="filter_type" value="vegan" {% if filter_type == 'vegan' %}checked{% endif %}>
+                    Vegan Only
+                </label>
+            </div>
+
+            <button type="submit">Filter Menu</button>
+        </form>
+
+        {% if error_message %}
+        <div class="error">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        {% if filtered_items %}
+        <div class="results">
+            <h2>Filtered Results ({{ filtered_items|length }} items)</h2>
+            {% for item, reason in filtered_items %}
+            <div class="menu-item">
+                <div class="menu-item-text">{{ item }}</div>
+                <div class="reason">Reason: {{ reason }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Toggle between URL and text input
+        document.getElementById('url-btn').addEventListener('click', function() {
+            document.getElementById('url-input').style.display = 'block';
+            document.getElementById('text-input').style.display = 'none';
+            document.getElementById('input_type_field').value = 'url';
+            this.classList.add('active');
+            document.getElementById('text-btn').classList.remove('active');
+        });
+
+        document.getElementById('text-btn').addEventListener('click', function() {
+            document.getElementById('url-input').style.display = 'none';
+            document.getElementById('text-input').style.display = 'block';
+            document.getElementById('input_type_field').value = 'text';
+            this.classList.add('active');
+            document.getElementById('url-btn').classList.remove('active');
+        });
+
+        // Initialize default state
+        document.getElementById('url-btn').classList.add('active');
+        document.getElementById('input_type_field').value = 'url';
+    </script>
+</body>
+</html>

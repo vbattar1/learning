@@ -153,6 +153,10 @@
                     <input type="radio" name="filter_type" value="vegan" {% if filter_type == 'vegan' %}checked{% endif %}>
                     Vegan Only
                 </label>
+                <label class="radio-option">
+                    <input type="radio" name="filter_type" value="nonvegetarian" {% if filter_type == 'nonvegetarian' %}checked{% endif %}>
+                    Non-Vegetarian Only
+                </label>
             </div>
 
             <button type="submit">Filter Menu</button>

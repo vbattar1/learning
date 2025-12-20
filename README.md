@@ -4,10 +4,11 @@ A FastAPI web application that helps you find vegan and vegetarian options from 
 
 ## What This Does
 
-This app takes restaurant menu information (either from a website URL or pasted text) and filters it to show only:
-- **Vegan options**: Plant-based items with no animal products
-- **Vegetarian options**: Items with no meat (may include dairy/eggs)
+This app takes restaurant menu information (either from a website URL or pasted text) and filters it to show:
 - **All items**: Shows everything for comparison
+- **Vegan options**: Plant-based items with no animal products
+- **Vegetarian options**: Items with no meat/fish (may include dairy/eggs)
+- **Non-Vegetarian options**: Items containing meat, fish, or seafood
 
 ## How It Works
 
@@ -117,8 +118,11 @@ Vegetable Stir Fry $11.99 - Mixed vegetables with tofu
 Beef Burger $15.99 - Angus beef patty with cheese
 ```
 
-With "Vegan Only" filter, it should show: "Vegan Buddha Bowl" and "Vegetable Stir Fry"
-With "Vegetarian Only" filter, it should show: "Vegan Buddha Bowl", "Vegetable Stir Fry", "Caesar Salad", and "Cheese Pizza"
+**Filter Results:**
+- **All Items**: Shows all 6 items
+- **Vegan Only**: Shows "Vegan Buddha Bowl" and "Vegetable Stir Fry"
+- **Vegetarian Only**: Shows "Vegan Buddha Bowl", "Vegetable Stir Fry", "Caesar Salad", and "Cheese Pizza"
+- **Non-Vegetarian Only**: Shows "Grilled Chicken Breast" and "Beef Burger"
 
 ## LLM vs Keyword Comparison
 
@@ -132,12 +136,12 @@ With "Vegetarian Only" filter, it should show: "Vegan Buddha Bowl", "Vegetable S
 | **Approach** | LLM extracts matching items | Keyword filtering |
 
 ### LLM Examples:
-- ✅ "Tofu Pad Thai with vegetables" → Vegan (understands tofu is plant-based)
-- ✅ "Black Bean Burger" → Vegan (recognizes beans as plant-based)
-- ✅ "Caesar Salad with parmesan" → Vegetarian (no meat, has dairy)
-- ❌ "Grilled Chicken Breast" → Neither (contains meat)
-- ❌ "Grilled Salmon" → Neither (salmon is fish, not vegetarian)
-- ❌ "Shrimp Scampi" → Neither (shrimp is seafood, not vegan)
+- ✅ **Vegan**: "Tofu Pad Thai with vegetables" → Plant-based ingredients
+- ✅ **Vegetarian**: "Caesar Salad with parmesan" → No meat, dairy allowed
+- ✅ **Non-Vegetarian**: "Grilled Salmon" → Contains fish
+- ✅ **Non-Vegetarian**: "Chicken Parmesan" → Contains meat
+- ❌ **Vegan**: "Grilled Chicken Breast" → Contains meat
+- ❌ **Vegetarian**: "Grilled Salmon" → Contains fish
 
 ## How the Filtering Logic Works
 
